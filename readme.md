@@ -23,8 +23,8 @@
 * 下指令 `apidoc -i api_forder -t template_forder`
 
 ## 舉例
-* API 專案目錄是在 `/var/www/project/app/controller/api/`
-* Template 目錄在 `/var/www/OA-apiDoc-Template/`
+* 假設 API 專案目錄是在 `/var/www/project/app/controller/api/`
+* 下載的 Template 目錄在 `/var/www/OA-apiDoc-Template/`
 * 終端機位置移到欲產生文件的位置，例如：`/var/www/`，所以下指令：`cd /var/www/`
 * 產生文件就指令為：`	apidoc -i /var/www/project/app/controller/api/ -t /var/www/OA-apiDoc-Template/`
 * 產生的文件檔案就會在：`/var/www/doc/`
