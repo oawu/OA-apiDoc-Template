@@ -28,6 +28,7 @@
 * 終端機位置移到欲產生文件的位置，例如：`/var/www/`，所以下指令：`cd /var/www/`
 * 產生文件就指令為：`	apidoc -i /var/www/project/app/controller/api/ -t /var/www/OA-apiDoc-Template/`
 * 產生的文件檔案就會在：`/var/www/doc/`
+* 假設伺服器 `127.0.0.1` 是指向 `/var/www/`，那就可以打開瀏覽器檢視 [http://127.0.0.1/doc/](http://127.0.0.1/doc/)
 
 ## 關於
 * 作者 - [OA Wu](https://www.ioa.tw/)
