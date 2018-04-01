@@ -1,0 +1,239 @@
+<?php
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+include_once 'libs' . DIRECTORY_SEPARATOR . 'Define.php';
+include_once 'libs' . DIRECTORY_SEPARATOR . 'Func' . PHP;
+include_once 'libs' . DIRECTORY_SEPARATOR . 'Logger' . PHP;
+include_once 'libs' . DIRECTORY_SEPARATOR . 'Minify' . PHP;
+
+use function color as cc;
+
+$file = array_shift ($argv);
+
+define ('FILENAME', str_replace (__DIR__ . DIRECTORY_SEPARATOR, '', __FILE__));
+
+if (!function_exists ('uploadHeaderText')) {
+  function uploadHeaderText () {
+    system ('clear');
+    echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+    echo " 【 " . cc ('歡迎使用 OAF2E 個人工具', 'y') . " 】" . str_repeat (' ', CLI_LEN - 48) . cc ('v 1.0', 'N') . '    ' . cc ('by', 'N') . ' ' . cc ('OA Wu', 'W') . "\n\n";
+    echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+  }
+}
+
+if (!function_exists ('removeRoot')) {
+  function removeRoot () {
+    if (!(file_exists (PATH_CMD . 'root') && !@unlink (PATH_CMD . 'root')))
+      return;
+    echo cc ('失敗', 'r') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+    exit();
+  }
+}
+
+if (!function_exists ('minifyStatic')) {
+  function minifyStatic () {
+    if (file_exists ('_dirs' . PHP))
+      include_once '_dirs' . PHP;
+
+    if (isset ($_dirs))
+      foreach ($_dirs as $key => $dir) {
+        $fs = array ();
+        mergeArrRec (mapDir ($p = PATH . trim ($key, DIRECTORY_SEPARATOR), (isset ($dir[1]) ? $dir[1] : true) ? 0 : 1, isset ($dir[2]) ? $dir[2] : false, isset ($dir[0]) ? $dir[0] : array ()), $fs, $p);
+
+        foreach ($fs as $f) {
+          $bom = pack ('H*','EFBBBF');
+
+          switch (pathinfo ($f, PATHINFO_EXTENSION)) {
+            case 'html': myWriteFile ($f, preg_replace ("/^$bom/", '', HTMLMin::minify (myReadFile ($f)))); break;
+            case 'css': myWriteFile ($f, preg_replace ("/^$bom/", '', CSSMin::minify (myReadFile ($f)))); break;
+            case 'js': myWriteFile ($f, preg_replace ("/^$bom/", '', JSMin::minify (myReadFile ($f)))); break;
+          }
+        }
+      }
+  }
+}
+if (!function_exists ('acc')) {
+  function listGit (&$hasGhPages, &$nowBranch) {
+    exec ('git branch', $shellOutput);
+    $hasGhPages = in_array ('gh-pages', array_map ('trim', $shellOutput));
+    (($nowBranch = array_values (array_map (function ($branch) { return preg_replace ('/^\* /', '', $branch); }, array_filter (array_map ('trim', $shellOutput), function ($branch) { return preg_match ('/^\* /', $branch); })))) && $nowBranch = $nowBranch[0]) || $nowBranch = 'master';
+  }
+}
+if (!function_exists ('acc')) {
+  function acc () {
+    exec ('git remote get-url origin', $shellOutput);
+    ($shellOutput = array_map ('trim', $shellOutput)) && $shellOutput = $shellOutput[0];
+    if (!$shellOutput)
+      return null;
+    if (preg_match_all ('/git@github\.com:(?<match>.*)\/.*/', $shellOutput, $matches))
+      return isset ($matches['match'][0]) ? $matches['match'][0] : null;
+    if (preg_match_all ('/https:\/\/github\.com\/(?<match>.*)\/.*/', $shellOutput, $matches))
+      return isset ($matches['match'][0]) ? $matches['match'][0] : null;
+    return null;
+  }
+}
+
+if (!function_exists ('noAnyModify')) {
+  function noAnyModify () {
+    exec ('git status -s', $shellOutput);
+    ($shellOutput = array_map ('trim', $shellOutput)) && $shellOutput = $shellOutput[0];
+    if (!$shellOutput)
+      return true;
+
+    return false;
+  }
+}
+if (file_exists ('package-lock.json'))
+  @unlink ('package-lock.json');
+
+if (!noAnyModify()) {
+  system ("clear");
+  echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'W', 'r') . "\n";
+  echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'W', 'r') . "\n";
+  echo cc ('║' . ' ', 'W', 'r') . cc ('警告！', 'Y', 'r') . cc ('您尚未針對專案做 Commit 喔！' . str_repeat(' ', CLI_LEN - 37) . '║', 'W', 'r') . "\n";
+  echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'W', 'r') . "\n";
+  echo cc ('╚' . str_repeat ('═', CLI_LEN - 2) . '╝', 'W', 'r') . "\n";
+  echo "\n";
+  echo ' ' . cc ('※', 'r') . " 為了預防萬一，部署之前請先 Commit，方法如下兩種：" . "\n" . '                 ' . cc ('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾', 'N');
+  echo "\n";
+  echo '   ' . cc ('1.', 'N') . " 請使用 Git 管理工具(如 " . cc ('Source', 'B') . ")，執行 Commit\n";
+  echo "                             " . cc ('^^^^^^', 'R') . "\n";
+  echo '   ' . cc ('2.', 'N') . " 使用指令 " . cc (' git add -A && git commit -m "註解" ', 'W', 'r') . "\n";
+  echo "               " . cc ('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'R') . "\n";
+  echo ' ' . cc ('※', 'r') . " 如失敗或不解，請聯絡作者 " . cc ('OA Wu', 'W') . cc (' https://www.ioa.tw/', 'w') . ' 吧！' . "\n" . '                                  ' . cc ('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾', 'N');
+  echo "\n";
+  exit();
+}
+if (!file_exists (PATH_CMD . 'node_modules' . DIRECTORY_SEPARATOR . 'gulp'. DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'gulp.js')) {
+  system ("clear");
+  echo cc ('╔' . str_repeat ('═', CLI_LEN - 2) . '╗', 'W', 'r') . "\n";
+  echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'W', 'r') . "\n";
+  echo cc ('║' . ' ', 'W', 'r') . cc ('警告！', 'Y', 'r') . cc ('您尚未初始化開發環境喔！' . str_repeat(' ', CLI_LEN - 33) . '║', 'W', 'r') . "\n";
+  echo cc ('║' . str_repeat (' ', CLI_LEN - 2) . '║', 'W', 'r') . "\n";
+  echo cc ('╚' . str_repeat ('═', CLI_LEN - 2) . '╝', 'W', 'r') . "\n";
+  echo "\n";
+  if (file_exists ('package-lock.json')) {
+    echo ' ' . cc ('※', 'r') . " 請先刪除 " . cc ('cmd', 'W') . " 內的 " . cc (' package-lock.json ', 'W', 'r') . ' 檔案。' . "\n";
+    echo "            " . cc ('   ', 'N') . cc ('      ^^^^^^^^^^^^^^^^^^^', 'R') . "\n";
+
+    echo ' ' . cc ('※', 'r') . " 然後再執行指令 " . cc (' npm install . ', 'W', 'r') . "，若失敗則改試 " . cc (' sudo npm install . ', 'W', 'r') . "\n";
+    echo "                  " . cc ('^^^^^^^^^^^^^^^' . '               ^^^^^^^^^^^^^^^^^^^^', 'R') . "\n";
+  } else {
+    echo ' ' . cc ('※', 'r') . " 請先執行指令 " . cc (' npm install . ', 'W', 'r') . "，若失敗則改試 " . cc (' sudo npm install . ', 'W', 'r') . "\n";
+    echo "                " . cc ('^^^^^^^^^^^^^^^' . '               ^^^^^^^^^^^^^^^^^^^^', 'R') . "\n";
+  }
+  echo ' ' . cc ('※', 'r') . ' 完成後請重新執行 ' . cc (' php ' . FILENAME . ' ', 'W', 'r') . ' 吧！' . "\n";
+  echo "                    " . cc ('^^^^^^^^^^^^', 'R') . "\n";
+  echo ' ' . cc ('※', 'r') . " 如果都失敗的話，請確認您是否有安裝 " . cc ('Node.js', 'W') . " 與 " . cc ('Gulp', 'W') . "" . "\n";
+  echo "\n";
+  echo ' ' . cc ('※', 'r') . " 試著聯絡作者 " . cc ('OA Wu', 'W') . cc (' https://www.ioa.tw/', 'w') . ' 吧！' . "\n" . '                      ' . cc ('‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾', 'N');
+  echo "\n";
+  exit();
+}
+
+if (!$argv) {
+  uploadHeaderText ();
+  do {
+    uploadHeaderText ();
+    echo ' ' . cc ('※', 'r') . " 選單\n";
+    echo ' ' . cc (str_repeat ('═', 6), 'N') . "\n";
+    echo '   ' . cc ('1.', 'W') . ' ' . '部署到 GitHub gh-pages Demo ' . "\n";
+    echo '   ' . cc ('2.', 'W') . ' ' . '部署到 Amazon Web Services S3 ' . "\n";
+    echo '   ' . cc ('q.', 'W') . ' ' . '沒事，按錯.. ' . "\n";
+    echo "\n";
+    echo ' ' . cc ('➜', 'G') . ' 請問你要幹嘛？' . cc ('(q)', 'N') . '：';
+
+    ($cho = trim (fgets (STDIN))) || $cho = 'q';
+  } while (!in_array (strtolower ($cho), array ('1', '2', 'q')));
+
+  
+  if ($cho == '1')
+    cho1 ('step1');
+  
+  if ($cho == '2')
+    cho2 ('all');
+  
+  if ($cho == 'q') {
+    echo "\n";
+    echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+    echo "  好的！下次別再按錯囉，期待您下次再使用，" . cc ('掰掰', 'W') . "～  \n\n";
+    echo cc (str_repeat ('═', CLI_LEN), 'N') . "\n\n";
+  }
+
+} else {
+  if (count ($argv) < 2)
+    exit;
+
+  if (!is_callable ($func = array_shift ($argv)))
+    exit;
+
+  call_user_func_array ($func, $argv);
+}
+
+function cho2 ($argv = null) {
+  $cmds = array ();
+  if ($argv == 'all') {
+
+    include_once 'demo.php';
+    echo cc (str_repeat ('═', CLI_LEN)) . "\n";
+    echo ' ' . cc ('◎', 'G') . " 切回原本分支 - ";
+      ($cmd = 'git checkout .. --quiet') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n";
+    echo cc (str_repeat ('═', CLI_LEN)) . "\n\n";
+  }
+}
+function cho1 ($argv = null, $nowBranch = 'master') {
+  if ($argv == 'step1') {
+    system ("clear");
+    echo cc (str_repeat ('═', CLI_LEN)) . "\n" . ' ' . cc ('◎ 部署開始 ◎', 'P') . "\n" . cc (str_repeat ('═', CLI_LEN)) . "\n";
+    
+    echo ' ' . cc ('◎', 'G') . " 掃描 Git 訊息 - ";
+      listGit ($hasGhPages, $nowBranch);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 移除本地端 gh-pages 分支 - ";
+      ($cmd = $hasGhPages ? 'git branch -D gh-pages' : '') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+    
+    echo ' ' . cc ('◎', 'G') . " 建立本地端 gh-pages 分支 - ";
+      ($cmd = 'git branch -v gh-pages') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+    
+    echo ' ' . cc ('◎', 'G') . " 切換至 gh-pages 分支 - ";
+      ($cmd = 'git checkout gh-pages --quiet') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 移除不必要檔案 - ";
+      removeRoot ();
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 壓縮靜態檔案 - ";
+      minifyStatic ();
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 紀錄 Commit - ";
+      ($cmd = 'git add -A && git commit -m "壓縮靜態檔案(js, html, css)、移除不必要檔案。" --quiet') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 上傳 push - ";
+      ($cmd = 'git push origin gh-pages --force --quiet') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n" . cc (str_repeat ('─', CLI_LEN), "N") . "\n";
+
+    echo ' ' . cc ('◎', 'G') . " 切回原本分支 - ";
+      ($cmd = 'git checkout ' . $nowBranch . ' --quiet') && exec ($cmd, $shellOutput);
+    echo cc ('完成', 'g') . "\n";
+    
+    echo cc (str_repeat ('═', CLI_LEN), "N") . "\n" . ' ' . cc ('◎ 完成部署 ◎', 'P') . "\n" . cc (str_repeat ('═', CLI_LEN), "N") . "\n\n";
+    
+    echo ' ' . cc ('➜', 'R') . ' ' . cc ('您的網址是', 'G') . '：' . (($acc = acc ()) ? 'https://' . $acc . '.github.io/' . FNAME . '/' . (file_exists (PATH . 'index.html') ? 'index.html' : '') : '');
+    echo "\n\n";
+
+  }
+
+  exit;
+}

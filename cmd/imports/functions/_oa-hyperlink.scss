@@ -1,0 +1,37 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+// <a></a>
+@mixin a($underLineHeight: 0, $d4UnderLine: false, $color: rgba(66, 133, 244, 1.00), $hoverColor: null) {
+  display: inline;
+  font-weight: normal;
+  text-decoration: none;
+  @if $hoverColor {
+  } @else {
+    $hoverColor: adjust-lightness($color, -15%);
+  }
+
+  @include transition(color .3s, border-bottom .3s);
+
+  color: $color;
+
+  @if $underLineHeight > 0 {
+    @if($d4UnderLine) {
+      border-bottom: $underLineHeight solid $color;
+    }
+    @else {
+      border-bottom: $underLineHeight solid transparent;
+    }
+  }
+  &.active, &:hover {
+    color: $hoverColor;
+
+    @if($underLineHeight > 0) {
+      border-bottom: $underLineHeight solid $hoverColor;
+    }
+  }
+}

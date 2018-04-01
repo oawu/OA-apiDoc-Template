@@ -1,0 +1,27 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+// <textarea></textarea>
+@mixin textarea($resize: false, $color: rgba(100, 175, 235, 1)) {
+  padding: 4px;
+  border: 1px solid rgba(200, 200, 200, 1.00);
+  font-size: 16px;
+  color: rgba(120, 120, 120, 1.00);
+  @include border-radius (2px);
+  @include transition(box-shadow .3s, border-color .3s);
+  
+  @if $resize {
+  } @else {
+    resize: none;
+  }
+
+  &:focus {
+    outline: 0;
+    border: 1px solid $color;
+    @include box-shadow(0 0 8px rgba(red($color), green($color), blue($color), .6));
+  }
+}

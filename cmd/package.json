@@ -1,0 +1,20 @@
+{
+  "name": "OAF2E",
+  "version": "4.3.3",
+  "description": "OA 的個人前端框架！",
+  "author": "OA Wu",
+  "email": "comdan66@gmail",
+  "devDependencies": {
+    "del": "^0.1.0",
+    "gulp": "^3.8.9",
+    "gulp-file": "^0.3.0",
+    "gulp-html-minifier": "^0.1.6",
+    "gulp-livereload": "^2.1.1",
+    "chokidar": "^1.6.1",
+    "gulp-uglify": "^0.3.1",
+    "gulp-shell": "^0.5.2",
+    "read-file": "^0.2.0",
+    "gulp-util": "^3.0.8",
+    "write": "^0.3.3"
+  }
+}

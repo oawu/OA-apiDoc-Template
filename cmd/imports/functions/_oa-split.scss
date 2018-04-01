@@ -1,0 +1,69 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+@mixin clearfix(){
+  *zoom: 1;
+
+  &:after{
+    display: table;
+    content: "";
+    line-height: 0;
+    clear: both;
+  }
+}
+
+@mixin split($leftName: '', $rightName: ''){
+  @include clearfix();
+  
+  @if $leftName == '' {
+    $leftName: '> *:first-child'
+  }
+  @if $rightName == '' {
+    $rightName: '> *:last-child'
+  }
+
+  #{$leftName}, #{$rightName} {
+    float: left;
+    position: relative;
+    display: inline-block;
+  }
+  #{$rightName} {
+    float: right;
+  }
+}
+@mixin split-left($leftWidth: 100px, $leftName: '', $rightName: ''){
+  @include split($leftName, $rightName);
+  
+  @if $leftName == '' {
+    $leftName: '> *:first-child'
+  }
+  @if $rightName == '' {
+    $rightName: '> *:last-child'
+  }
+  #{$leftName} {
+    width: $leftWidth;
+  }
+  #{$rightName} {
+    width: calc(100% - #{$leftWidth});
+  }
+}
+@mixin split-right($rightWidth: 100px, $leftName: '', $rightName: ''){
+  @include split($leftName, $rightName);
+  
+  @if $leftName == '' {
+    $leftName: '> *:first-child'
+  }
+  @if $rightName == '' {
+    $rightName: '> *:last-child'
+  }
+  #{$leftName} {
+    width: calc(100% - #{$rightWidth});
+  }
+  #{$rightName} {
+    width: $rightWidth;
+  }
+}

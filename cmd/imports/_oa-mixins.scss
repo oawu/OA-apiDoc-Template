@@ -1,0 +1,56 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+@import "functions/_oa-button";
+@import "functions/_oa-checkbox";
+@import "functions/_oa-switch";
+@import "functions/_oa-radio";
+@import "functions/_oa-hyperlink";
+@import "functions/_oa-input";
+@import "functions/_oa-textarea";
+@import "functions/_oa-split";
+
+@mixin icomoon-font($ff){
+  @content;
+  font-family: $ff, Roboto,RobotoDraft,Helvetica,Arial,sans-serif,"微軟正黑體", "Microsoft JhengHei";
+}
+@mixin range-width($min: 0, $max: 0){
+  @if $max == 0 {
+    @media screen and (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @media screen and (max-width: $max - 1px) and (min-width: $min) {
+      @content;
+    }
+  }
+}
+@mixin range-height($min: 0, $max: 0){
+  @if $max == 0 {
+    @media screen and (min-height: $min) {
+      @content;
+    }
+  } @else {
+    @media screen and (max-height: $max - 1px) and (min-height: $min) {
+      @content;
+    }
+  }
+}
+
+@mixin font-smoothing($val: antialiased){
+  -moz-osx-font-smoothing: $val;
+   -webkit-font-smoothing: $val;
+      -moz-font-smoothing: $val;
+       -ms-font-smoothing: $val;
+        -o-font-smoothing: $val;
+}
+
+@mixin overflow-docx3(){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

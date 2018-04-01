@@ -1,0 +1,122 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+// <label>
+//   <input type='checkbox'>
+//   <span></span>
+// </label>
+@mixin switch($color: rgba(69, 139, 244, 1.00), $w: 20px, $l: 40px, $lw: 4px){
+  position: relative;
+  display: inline-block;
+  width: $l;
+  height: $w;
+  cursor: pointer;
+  $x: '_switch_r_'+random(1000);
+
+  input {
+    position: absolute;
+    @include opacity(0);
+  }
+  span {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    width: $l;
+    height: $w;
+    overflow: hidden;
+    @include border-radius($w / 2);
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(223, 223, 223, 1.00);
+      background-color: white;
+      @include border-radius($w / 2);
+      @include box-shadow(inset 0px 0px 0px 0px rgba(223, 223, 223, 1));
+      @include transition(box-shadow 0.4s, background-color .2s);
+    }
+    &:after {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      display: inline-block;
+      width: $w - 1px * 2;
+      height: $w - 1px * 2;
+      @include border-radius(50%);
+      @include transition(background-color 0.4s, left 0.2s);
+      @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+      background-color: rgba(255, 255, 255, 1.00);  
+    }
+  }
+
+  &:not(.loading) {
+    input {
+      &:checked {
+        ~ span {
+          &:before {
+            background-color: $color;
+            border-color: adjust-lightness($color, -5%);
+            @include box-shadow(inset 0px 0px 0px 11px $color);
+          }
+          &:after {
+            left: $l + 1px - $w;
+          }
+        }
+      }
+    }
+  }
+  &.loading {
+    cursor: not-allowed;
+
+    span {
+      width: $w;
+      height: $w;
+
+      &:before {
+        border-width: 0;
+        @include box-shadow(inset 0 0 1px rgba(0, 0, 0, .15));
+        @include border-radius(50%);
+        @include background-image(linear-gradient(rgba(184, 241, 148, 1.00) 0%, rgba(89, 178, 169, 1.00) 100%));
+        @include animation(#{$x} 1s linear infinite);
+        z-index: 1;
+      }
+      &:after {
+        left: $lw;
+        top: $lw;
+        background-color: rgba(255, 255, 255, 1.00);
+        width: calc(100% - #{$lw} * 2);
+        height: calc(100% - #{$lw} * 2);
+        @include border-radius(50%);
+        @include box-shadow(0 0 1px rgba(0, 0, 0, .1));
+        z-index: 2;
+      }
+    }
+  }
+  input[disabled] {
+    cursor: not-allowed;
+    ~ span {
+      cursor: not-allowed;
+      &:before {
+        border: 1px solid rgba(215, 215, 215, 1.00);
+        background-color: rgba(235, 235, 235, 1.00);
+      }
+      &:after {
+        @include box-shadow(0 0 0 1px rgba(215, 215, 215, 1));
+        background-color: rgba(245, 245, 245, 1.00);
+      }
+    }
+  }
+
+  @include keyframes(#{$x}) { 0% { @include rotate(0); } 100% { @include rotate(360deg); } }
+}

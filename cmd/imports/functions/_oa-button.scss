@@ -1,0 +1,41 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+// <button></button>
+@mixin button($color: rgba(69, 139, 244, 1.00)){
+  display: inline-block;
+  width: auto;
+  height: 25px;
+  line-height: 25px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+  cursor: pointer;
+  font-size: 13px;
+  @include contrasted($color, rgba(55, 55, 55, 1.00), rgba(255, 255, 255, 1.00));
+  @include box-shadow(inset 1px 1px 1px rgba(255, 255, 255, 0.15), inset -1px -1px 1px rgba(0, 0, 0, 0.15));
+  @include border-radius(2px);
+  @include transition(box-shadow .1s);
+  
+  &:hover {
+    @include box-shadow(inset -1px -1px 2px rgba(0, 0, 0, 0.25), inset 1px 1px 2px rgba(255, 255, 255, 0.25));
+    @include text-shadow(0 0 1px rgba(0, 0, 0, 0.25));
+  }
+  &:active {
+    @include box-shadow(inset 1px 1px 1px rgba(0, 0, 0, 0.1));
+  }
+  &:focus {
+    outline: 0;
+  }
+  &[disabled] {
+    cursor: not-allowed;
+    @include text-shadow(none);
+    @include box-shadow(none);
+    $amount: 15%;
+    @include contrasted(adjust-lightness($color, $amount), adjust-lightness(rgba(55, 55, 55, 1.00), $amount), adjust-lightness(rgba(255, 255, 255, 1.00), $amount));
+  }
+}

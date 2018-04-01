@@ -1,0 +1,106 @@
+/**
+ * @author      OA Wu <comdan66@gmail.com>
+ * @copyright   Copyright (c) 2015 - 2018, OAF2E
+ * @license     http://opensource.org/licenses/MIT  MIT License
+ * @link        https://www.ioa.tw/
+ */
+
+// <label>
+//   <input type='radio'>
+//   <span></span>
+// </label>
+@mixin radio($color: rgba(69, 139, 244, 1.00), $d: 20px, $s: 6px){
+  position: relative;
+  display: inline-block;
+  height: $d;
+  line-height: $d;
+  min-width: $d;
+  padding-left: $d + 4px;
+  cursor: pointer;
+  $x: '_radio_r_'+random(1000);
+
+
+  > * {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+  }
+  input {
+    @include opacity(0);
+    z-index: 2;
+    z-index: 1;
+  }
+  span {
+    width: $d;
+    height: $d;
+    z-index: 2;
+    @include border-radius(50%);
+    @include transition(background-color .3s);
+    @include box-shadow(inset 0 0 0 .5px rgba(100, 100, 100, .500));
+    
+    
+    &:before, &:after {
+      position: absolute;
+      display: inline-block;
+    }
+    &:after {
+      content: '';
+      left: $s;
+      top: $s;
+      width: calc(100% - #{$s * 2});
+      height: calc(100% - #{$s * 2});
+      background-color: white;
+      @include border-radius(50%);
+      @include scale(0);
+      @include transition(transform .3s);
+    }
+  }
+  input:checked {
+    ~ span {
+      background-color: $color;
+      @include box-shadow(inset 1px 1px 1px rgba(0, 0, 0, .200));
+      &:after {
+        @include box-shadow(1px 1px 1px rgba(0, 0, 0, .200));
+      @include scale(1);
+      }
+    }
+  }
+  &.loading {
+    cursor: not-allowed;
+    span {
+
+      &:before {
+        content: '';
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        @include box-shadow(inset 0 0 1px rgba(0, 0, 0, .15));
+        @include border-radius(50%);
+        @include background-image(linear-gradient(rgba(184, 241, 148, 1.00) 0%, rgba(89, 178, 169, 1.00) 100%));
+        @include animation(#{$x} 1s linear infinite);
+        z-index: 1;
+      }
+      &:after {
+        background-color: rgba(255, 255, 255, 1.00);
+        @include border-radius(50%);
+        @include box-shadow(0 0 1px rgba(0, 0, 0, .1));
+        z-index: 2;
+        left: 4px;
+        top: 4px;
+
+        width: calc(100% - #{4px * 2});
+        height: calc(100% - #{4px * 2});
+      }
+    }
+  }
+  input[disabled] {
+    cursor: not-allowed;
+    ~ span {
+      cursor: not-allowed;
+      @include box-shadow(inset 0 0 0 .5px rgba(100, 100, 100, .300));
+    }
+  }
+  @include keyframes(#{$x}) { 0% { @include rotate(0); } 100% { @include rotate(360deg); } }
+}
