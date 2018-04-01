@@ -152,7 +152,7 @@ $(function () {
       menu.$apis = $('<div />').attr ('id', 'apis');
       menu.$el.append (menu.$search);
       menu.$el.append (menu.$apis);
-      menu.$el.append ($('<footer />').attr ('id', 'footer').text ('後台版型設計 by').append ($('<a />').attr ('href', 'https://www.ioa.tw/f=apidoc').attr ('target', '_blank').text ('OA Wu')).append ('，程式碼：').append ($('<a />').attr ('href', '').attr ('target', '_blank').text ('GitHub')));
+      menu.$el.append ($('<footer />').attr ('id', 'footer').text ('後台版型設計 by').append ($('<a />').attr ('href', 'https://www.ioa.tw/f=apidoc').attr ('target', '_blank').text ('OA Wu')).append ('，程式碼：').append ($('<a />').attr ('href', 'https://github.com/comdan66/OA-apiDoc-Template.git').attr ('target', '_blank').text ('GitHub')));
 
       if (menu.apis === null)
         $.get ('api_data.json?t=' + new Date ().getTime ())
