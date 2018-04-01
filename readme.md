@@ -1,12 +1,11 @@
 # Welcome To OA's apiDoc Template!
-OA 個人的 apiDoc 主題樣板！  
-相信大家不管身為前端還是後端的各位大大們或多或少都有使用過 [apiDoc](http://apidocjs.com/) 吧！？  
-沒錯！這個是我自己寫的 apiDoc 的 Template 樣板！  
+相信大家不管身為前端還是後端的各位大大們，在開發前後端串接或多或少都有使用過 [apiDoc](http://apidocjs.com/) 吧！？  
+沒錯！這個是 OA 我自己寫的 apiDoc 的 Template 樣板！有興趣的話，歡迎各位看一下玩玩看囉！
 
 使用的工具不難，版型是用 [scss](http://compass-style.org/) 刻的，JavaScript 也僅用 [jQuery](https://jquery.com/)。  
 流程主要是藉由 [Ajax](https://zh.wikipedia.org/wiki/AJAX) 取得編譯後的 `api_data.json`、`api_project.json` 然後再產生 HTML 畫面。
 
-若是各位大大們覺得有趣的話，歡迎在此 Github 專案右上角幫我按一下 **星星** 給我個鼓勵吧！
+若是各位大大們覺得有趣的話，歡迎在此 [GitHub](https://github.com/comdan66/OA-apiDoc-Template) 專案右上角幫我按一下 **星星** 給我個鼓勵吧！
 
 ---
 
@@ -16,6 +15,7 @@ OA 個人的 apiDoc 主題樣板！
 ## 說明
 * 此樣板是使用 [OA](http://www.ioa.tw/) 個人開發的前端工具 [OAF2E](https://github.com/comdan66/oaf2e) 所製作的。
 * 本架構下使用 [jQuery](https://jquery.com/)、[compass](http://compass-style.org/)、[Gulp](http://gulpjs.com/) 開發。
+* 本樣板沒有支援 100% 所有 apiDoc 的功能喔！所以使用前請先斟酌評估功能。
 
 ## 使用方法
 * 請先確認電腦是否已完成安裝 [apiDoc](http://apidocjs.com/)。
