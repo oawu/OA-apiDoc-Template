@@ -6,6 +6,43 @@
  */
  
 $(function () {
+
+  var params = {
+    val: {},
+    init: function () {
+      window.location.hash.substr (1).split ('&').forEach (function (val) {
+        var splitter = val.split ('=');
+        if (splitter.length != 2) return;
+        var k = decodeURIComponent (splitter[0]), v = decodeURIComponent (splitter[1]);
+        if (k.slice (-2) == '[]') if (!params.val[k = k.slice (0, -2)]) params.val[k] = [v]; else params.val[k].push (v); else params.val[k] = v;
+      });
+
+      params.val.n = params.val.n ? params.val.n : '';
+      params.val.t = params.val.t ? params.val.t : '';
+      params.val.q = params.val.q ? params.val.q : '';
+    },
+    update: function (k, v) {
+      if (typeof params.val[k] === 'undefined')
+        return;
+
+      params.val[k] = v;
+      
+      if (k == 'n')
+        params.val.t = '';
+      
+      if (k == 'q') {
+        params.val.n = '';
+        params.val.t = '';
+      }
+
+      var str = [];
+      for (var t in params.val)
+        str.push (t + '=' + params.val[t]);
+
+      window.location.hash = str.join ('&');
+    }
+  };
+
   var load = {
     $el: $('#load'),
     init: function () {
@@ -63,10 +100,10 @@ $(function () {
       var $url = $('<div />').addClass ('url').attr ('data-type', obj.type).append ($('<pre />').text (obj.url));
       
       var formats = {
-        header: {title: 'Header', d4: 'Header'},
-        parameter: {title: '參數', d4: 'Parameter'},
-        success: {title: '成功', d4: 'Success 200'},
-        error: {title: '錯誤', d4: 'Error 4xx'}
+        header: {title: 'Header', d4: 'Header', v: 'h'},
+        parameter: {title: '參數', d4: 'Parameter', v: 'p'},
+        success: {title: '成功', d4: 'Success 200', v: 's'},
+        error: {title: '錯誤', d4: 'Error 4xx', v: 'e'}
       };
 
       main.$tabs = [];
@@ -74,7 +111,7 @@ $(function () {
 
       for (var format in formats)
         if (typeof obj[format] !== 'undefined') {
-          main.$tabs.push (formats[format].title);
+          main.$tabs.push (formats[format]);
           main.$panels.push ({
             d4: formats[format].d4,
             fields: typeof obj[format].fields === 'undefined' ? {} : obj[format].fields,
@@ -82,7 +119,7 @@ $(function () {
           });
         }
 
-      main.$tabs = $(main.$tabs.map (function (t) { return $('<a />').text (t).click (function () { main.$format.attr ('data-i', $(this).index () + 1); }); })).map ($.fn.toArray);
+      main.$tabs = $(main.$tabs.map (function (t) { return $('<a />').attr ('data-name', t.v).text (t.title).click (function () { params.update ('t', $(this).attr ('data-name')); main.$format.attr ('data-i', $(this).index () + 1); }); })).map ($.fn.toArray);
       main.$panels = $(main.$panels.map (function (t) {
         var $div = $('<div />');
 
@@ -126,7 +163,13 @@ $(function () {
                       $('<div />').addClass ('tabs').append (main.$tabs)).append (
                       $('<div />').addClass ('panels').append (main.$panels));
 
-      main.$tabs.first ().click ();
+      // main.$tabs.first ().click ();
+
+
+      if (params.val.t.length && main.$tabs.filter ('[data-name="' + params.val.t + '"]').length)
+        main.$tabs.filter ('[data-name="' + params.val.t + '"]').first ().click ();
+      else
+        main.$tabs.first ().click ();
 
       main.$el.append ($header)
               .append ($important)
@@ -147,7 +190,10 @@ $(function () {
     init: function () {
       menu.$el.empty ();
       menu.$search = $('<form />').attr ('id', 'search').append (
-        $('<input />').attr ('placeholder', '你想找什麼？').prop ('required', true).keyup (menu.filter)).submit (function () { return false; });
+        $('<input />').val (params.val.q).attr ('placeholder', '你想找什麼？').prop ('required', true).keyup (function () {
+          params.update ('q', $(this).val ().trim ());
+          menu.filter (params.val.q);
+        })).submit (function () { return false; });
 
       menu.$apis = $('<div />').attr ('id', 'apis');
       menu.$el.append (menu.$search);
@@ -156,12 +202,12 @@ $(function () {
 
       if (menu.apis === null)
         $.get ('api_data.json?t=' + new Date ().getTime ())
-         .done (function (r) { menu.apis = r; menu.filter (); })
-         .fail (function () { menu.apis = []; menu.filter (); });
+         .done (function (r) { menu.apis = r; menu.filter (params.val.q); })
+         .fail (function () { menu.apis = []; menu.filter (params.val.q); });
       else
-        menu.filter ();
+        menu.filter (params.val.q);
     },
-    filter: function (q, t) {
+    filter: function (q) {
       q = typeof q === 'undefined' ? '' : q;
       q = typeof q === 'string' ? q.trim () : q;
       q = typeof q === 'object' ? $(this).val ().trim () : q;
@@ -188,7 +234,8 @@ $(function () {
 
       for (var group in groups) {
         var tmp = groups[group].map (function (t) {
-          return $('<a />').attr ('data-type', t.type).attr ('data-url', t.url).text (t.title).data ('obj', t).click (function () {
+          return $('<a />').attr ('data-name', t.name).attr ('data-type', t.type).attr ('data-url', t.url).text (t.title).data ('obj', t).click (function () {
+            params.update ('n', $(this).data ('name'));
             menu.$links.removeClass ('active');
             $(this).addClass ('active');
             main.render ($(this).data ('obj'));
@@ -197,20 +244,24 @@ $(function () {
         menu.$apis.append ($('<div />').attr ('data-title', group).attr ('data-cnt', groups[group].length).append (tmp));
         menu.$links.push (tmp);
       }
-      console.error ();
       
       menu.$links = $(menu.$links.length ? menu.$links.reduce (function (p, n) { return p.concat (n); }) : []).map ($.fn.toArray);
-      load.hide (function () {
-        if (!menu.$links.length) {
-          menu.$apis.attr ('data-tip', '找不到任何 API');
-          main.$el.attr ('data-tip', '找不到任何 API 資訊');
-        } else {
+
+      if (!menu.$links.length) {
+        menu.$apis.attr ('data-tip', '找不到任何 API');
+        main.$el.attr ('data-tip', '找不到任何 API 資訊');
+      } else {
+        if (params.val.n.length && menu.$links.filter ('[data-name="' + params.val.n + '"]').length)
+          menu.$links.filter ('[data-name="' + params.val.n + '"]').first ().click ();
+        else
           menu.$links.first ().click ();
-        }
+      }
+      load.hide (function () {
       });
     }
   };
 
+  params.init ();
   load.init ();
   main.init ();
   menu.init ();
