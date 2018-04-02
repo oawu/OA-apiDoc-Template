@@ -144,7 +144,7 @@ html {
       color: rgba(200, 200, 200, 1);
     }
   }
-  &[data-tip]:not([data-tip='']) {
+  &[data-tip]:not([data-tip='']):empty {
     &:before {
       content: attr(data-tip);
     }
@@ -216,7 +216,7 @@ html {
       color: rgba(200, 200, 200, 1);
     }
   }
-  &[data-tip]:not([data-tip='']) {
+  &[data-tip]:not([data-tip='']):empty {
     &:before {
       content: attr(data-tip);
     }
@@ -402,7 +402,7 @@ html {
         color: rgba(200, 200, 200, 1);
       }
     }
-    &[data-tip]:not([data-tip='']) {
+    &[data-tip]:not([data-tip='']):empty {
       &:before {
         content: attr(data-tip);
       }
