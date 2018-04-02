@@ -251,6 +251,9 @@ $(function () {
         menu.$apis.attr ('data-tip', '找不到任何 API');
         main.$el.attr ('data-tip', '找不到任何 API 資訊');
       } else {
+        menu.$apis.removeAttr ('data-tip');
+        main.$el.removeAttr ('data-tip');
+
         if (params.val.n.length && menu.$links.filter ('[data-name="' + params.val.n + '"]').length)
           menu.$links.filter ('[data-name="' + params.val.n + '"]').first ().click ();
         else
