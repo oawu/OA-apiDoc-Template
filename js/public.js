@@ -27,8 +27,8 @@ $(function () {
 
       params.val[k] = v;
       
-      if (k == 'n')
-        params.val.t = '';
+      // if (k == 'n')
+      //   params.val.t = '';
       
       if (k == 'q') {
         params.val.n = '';
