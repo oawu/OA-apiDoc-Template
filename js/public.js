@@ -172,6 +172,9 @@ $(function () {
                       $('<div />').addClass ('tabs').append (main.$tabs)).append (
                       $('<div />').addClass ('panels').append (main.$panels));
 
+      // main.$tabs.first ().click ();
+
+
       if (params.val.t.length && main.$tabs.filter ('[data-name="' + params.val.t + '"]').length)
         main.$tabs.filter ('[data-name="' + params.val.t + '"]').first ().click ();
       else
@@ -274,16 +277,12 @@ $(function () {
   load.init ();
   main.init ();
   menu.init ();
-
+  
   $(window).keydown (function (e) {
-
     var i = parseInt (main.$format.attr ('data-i'));
     var l = main.$tabs.length;
 
     if (e.keyCode == 38) {
-      if (i - 1 != 0)
-        return;
-
       var $tmp = menu.$links.filter ('.active').prev ();
       if ($tmp.length)
         return $tmp.click ();
@@ -296,9 +295,6 @@ $(function () {
       return $tmp.find ('>*').last ().click ();
     }
     if (e.keyCode == 40) {
-      if (i - 1 != 0)
-        return;
-
       var $tmp = menu.$links.filter ('.active').next ();
       if ($tmp.length)
         return $tmp.click ();
@@ -307,29 +303,18 @@ $(function () {
       if ($tmp.length)
         return $tmp.find ('>*').first ().click ();
 
-
       $tmp = menu.$apis.find ('>*').first ();
       return $tmp.find ('>*').first ().click ();
     }
 
     if (e.keyCode == 39) {
-      i = i + 1;
-      i = i > l ? l : i;
-
-      menu.$el.removeClass ('focus');
-      main.$format.attr ('data-i', i);
+      main.$format.attr ('data-i', ++i > l ? i = 1 : i);
       params.update ('t', main.$tabs.eq (i - 1).attr ('data-name'));
     }
 
     if (e.keyCode == 37) {
-      i = i - 1;
-      if (i < 1) {
-        i = 0;
-        menu.$el.addClass ('focus');
-      } else {
-        main.$format.attr ('data-i', i);
-        params.update ('t', main.$tabs.eq (i - 1).attr ('data-name'));
-      }
+      main.$format.attr ('data-i', --i < 1 ? i = l : i);
+      params.update ('t', main.$tabs.eq (i - 1).attr ('data-name'));
     }
   });
 });
